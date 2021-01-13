@@ -1,5 +1,5 @@
 #include <iostream>
-#include <stdlib.h>
+#include <cmath>
 using namespace std;
 class Piesa
 {
@@ -43,7 +43,7 @@ class Pion : public Piesa
                 if (get_owner() == 0)
                 {
                     //Daca e alb se muta 1 in sus
-                    if (rnd_Srs == rnd_Dst + 1)
+                    if (rnd_Srs == rnd_Dst - 1)
                         return true;
                 }
                 else
@@ -96,7 +96,7 @@ class Nebun : public Piesa
     }
     bool destinatie_valida(int rnd_Srs, int col_Srs, int rnd_Dst, int col_Dst, Piesa* Tabla[8][8])
     {
-        if (abs(col_Dst - col_Srs) == abs(rnd_Dst - col_Srs))
+        if (abs(col_Dst - col_Srs) == abs(rnd_Dst - rnd_Srs))
         {
             //Verifica ca nu sunt alte piese pe drumul nebunului
             int rnd_Directie;
@@ -176,7 +176,7 @@ class Regina : public Piesa
     bool destinatie_valida(int rnd_Srs, int col_Srs, int rnd_Dst, int col_Dst, Piesa* Tabla[8][8])
     {
         //Verifica ca nu sunt alte piese pe drumul reginei 
-        if (abs(col_Dst - col_Srs) == abs(rnd_Dst - col_Srs))
+        if (abs(col_Dst - col_Srs) == abs(rnd_Dst - rnd_Srs))
         {
             //Verifica pe diagonala
             int rnd_Directie;
@@ -316,7 +316,7 @@ public:
         int col_Rege, rnd_Rege;
         for(int rnd=0;rnd<8;rnd++)
             for (int col = 0; col < 8; col++)
-                if (Tabla[rnd][col] != 0 && (*Tabla)[rnd][col].get_owner() == owner && (*Tabla)[rnd][col].get_piece() == 6)
+                if (Tabla[rnd][col] != 0 && Tabla[rnd][col]->get_owner() == owner && Tabla[rnd][col]->get_piece() == 6)
                 {
                     col_Rege = col;
                     rnd_Rege = rnd;
@@ -324,7 +324,7 @@ public:
         //Verifica daca vreuna din piesele oponentului poate sa ia regele
         for (int rnd = 0; rnd < 8; rnd++)
             for (int col = 0; col < 8; col++)
-                if (Tabla[rnd][col] != 0 && (*Tabla)[rnd][col].get_owner() == owner && (*Tabla)[rnd][col].mutare_corecta(rnd, col, rnd_Rege, col_Rege, Tabla))
+                if (Tabla[rnd][col] != 0 && Tabla[rnd][col]->get_owner() == owner && Tabla[rnd][col]->mutare_corecta(rnd, col, rnd_Rege, col_Rege, Tabla))
                     return true;
         return false;
     }
@@ -333,7 +333,7 @@ public:
         //Parcurge toate piesele si verifica daca vreuna are mutari corecte dispnibile
         for (int rnd = 0; rnd < 8; rnd++)
             for (int col = 0; col < 8; col++)
-                if (Tabla[rnd][col] != 0 && (*Tabla)[rnd][col].get_owner() == owner)
+                if (Tabla[rnd][col] != 0 && Tabla[rnd][col]->get_owner() == owner)
                 {
                     for (int rnd_Mutare = 0; rnd_Mutare < 8; rnd_Mutare++)
                         for (int col_Mutare = 0; col_Mutare < 8; col_Mutare++)
@@ -391,13 +391,13 @@ public:
                             out << 'P';
                             break;
                         case 2:
-                            out << 'T';
-                            break;
-                        case 3:
                             out << 'C';
                             break;
-                        case 4:
+                        case 3:
                             out << 'N';
+                            break;
+                        case 4:
+                            out << 'T';
                             break;
                         case 5:
                             out << 'r';
@@ -501,6 +501,7 @@ public:
             cin >> dst;
             if (srs.pozitie_pe_tabla() && dst.pozitie_pe_tabla())
             {
+                //cout << abs(-5);
                 Piesa* p_Curenta = Tabla[srs.get_rnd()][srs.get_col()];
                 if (p_Curenta != 0 && p_Curenta->get_owner() == jucator)
                 {
@@ -530,7 +531,7 @@ public:
     }
     void schimba_jucatorul()
     {
-        jucator = (jucator == 1) ? 1 : 0;
+        jucator = (jucator == 1) ? 0 : 1;
     }
     bool sfarsit_joc()
     {
